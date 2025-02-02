@@ -1,5 +1,5 @@
 {
-  "name": "task-service",
+  "name": "notification-service",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -11,15 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "apollo-server-express": "^3.13.0",
-    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "mongoose": "^8.9.6",
-    "redis": "^4.7.0"
+    "express": "^4.21.2",
+    "redis": "^4.7.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.0",
     "@types/redis": "^4.0.10",

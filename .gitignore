@@ -46,3 +46,6 @@
 
 /backend/task-service/node_modules
 /backend/task-service/.env
+
+/backend/notification-service/node_modules
+/backend/notification-service/.env

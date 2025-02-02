@@ -1,4 +1,8 @@
+import { createClient } from "redis";
 import Task from "../models/Task";
+
+const redisClient = createClient({ url: process.env.REDIS_URL });
+redisClient.connect();
 
 const resolvers = {
   Query: {
@@ -11,8 +15,15 @@ const resolvers = {
       await task.save();
       return task;
     },
-    updateTask: async (_: any, { id, status }: any) => {
-      return await Task.findByIdAndUpdate(id, { status }, { new: true });
+    updateTask: async (_, { id, status }) => {
+      const updatedTask = await Task.findByIdAndUpdate(id, { status }, { new: true });
+
+      if (!updatedTask) throw new Error("Task not found");
+
+      // Publish update to Redis
+      await redisClient.publish("task-updates", JSON.stringify(updatedTask));
+
+      return updatedTask;
     },
     deleteTask: async (_: any, { id }: any) => {
       await Task.findByIdAndDelete(id);
