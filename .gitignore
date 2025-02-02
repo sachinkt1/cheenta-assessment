@@ -43,3 +43,6 @@
 /backend/.env
 /backend/user-service/node_modules
 /backend/user-service/.env
+
+/backend/task-service/node_modules
+/backend/task-service/.env
