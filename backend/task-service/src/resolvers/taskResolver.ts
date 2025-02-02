@@ -15,7 +15,7 @@ const resolvers = {
       await task.save();
       return task;
     },
-    updateTask: async (_, { id, status }) => {
+    updateTask: async (_: any, { id, status }: any) => {
       const updatedTask = await Task.findByIdAndUpdate(id, { status }, { new: true });
 
       if (!updatedTask) throw new Error("Task not found");
