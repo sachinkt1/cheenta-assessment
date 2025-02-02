@@ -39,3 +39,7 @@
 # typescript
 /frontend/*.tsbuildinfo
 /frontend/next-env.d.ts
+
+/backend/.env
+/backend/user-service/node_modules
+/backend/user-service/.env
