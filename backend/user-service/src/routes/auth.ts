@@ -1,31 +1,42 @@
 import express from "express";
-import passport from "passport";
-import jwt from "jsonwebtoken";
+import User from "../models/User";
 
 const router = express.Router();
 
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// Google Login Route
+router.post("/google-login", async (req, res) => {
+  const { googleId, name, email, avatar } = req.body;
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
-  (req, res):void => {
-    if (!req.user) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+  try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({ googleId, name, email, avatar, role: "user" });
     }
 
-    const token = jwt.sign(
-      { id: (req.user as any)._id, email: (req.user as any).email },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
-    );
-
-    res.redirect(`http://localhost:3000/dashboard?token=${token}`);
+    res.status(200).json({ message: "User logged in", user });
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-);
+});
+
+// Get User Session Data
+router.get("/me", async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ id: user._id, role: user.role });
+  } catch (error) {
+    console.error("Fetch User Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 export default router;

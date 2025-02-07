@@ -41,7 +41,7 @@ const resolvers: Resolvers = {
     },
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
-      if (!user || user.password !== password) throw new Error("Invalid credentials");
+      if (!user || user.email !== email) throw new Error("Invalid credentials");
       return "Login successful!";
     },
   },
