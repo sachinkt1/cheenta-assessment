@@ -50,6 +50,10 @@ export default function NewTask() {
     }
   };
 
+  const handleNav = () => {
+    router.push("/");
+  }
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md card">
@@ -74,9 +78,14 @@ export default function NewTask() {
             value={assignedTo}
             onChange={(e) => setAssignedTo(e.target.value)}
           />
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Creating..." : "Create Task"}
-          </Button>
+          <div className="flex flex-row justify-around">
+            <Button type="button" variant="secondary" onClick={handleNav}>
+              Back
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Task"}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

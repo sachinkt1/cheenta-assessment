@@ -35,3 +35,14 @@ body {
   display: inline-block;
   cursor: pointer;
 }
+
+.create-icon {
+  display: inline-block;
+  height: 1.5rem;
+  width: 1.4rem;
+  margin-right: 0.2rem;
+}
+
+.pointer {
+  cursor: pointer;
+}

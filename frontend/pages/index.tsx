@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import { GET_TASKS } from "@/graphql/queries";
 import { UPDATE_TASK_STATUS } from "@/graphql/mutations";
+import { Button } from "@/components/ui/Button";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -72,7 +73,7 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               <select
-                className="p-2 border rounded"
+                className="p-2 border rounded pointer"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -81,15 +82,18 @@ export default function Home() {
                 <option value="inProgress">In Progress</option>
                 <option value="completed">Completed</option>
               </select>
-              <button
+              <p
                 onClick={() => router.push("/tasks/new")}
-                className="p-2 bg-green-500 rounded"
+                className="p-2 rounded hover:text-blue-500"
               >
-                Create New Task
-              </button>
-              <button onClick={() => signOut()} className="p-2 bg-red-500 rounded">
+                <img className="create-icon hover:text-blue-500" src="/icons8-create-task-50.png" alt="" />
+                <span className="pointer">
+                  Create New Task
+                </span>
+              </p>
+              <p onClick={() => signOut()} className="p-2 hover:text-blue-500 pointer">
                 Logout
-              </button>
+              </p>
             </div>
           </div>
           <div className="flex justify-center">
@@ -120,12 +124,16 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-screen">
-          <h2 className="text-2xl">Welcome To,</h2>
-          <p className="text-lg pt-2">Task Management System</p>
-          <button onClick={() => signIn("google")} className="p-2 bg-blue-500 text-white rounded mt-4">
-            Login with Google
-          </button>
+          <div className="flex flex-col items-center justify-center h-m-screen">
+            <img className="mb-8" src="/banner.png" alt="" />
+            <h2 className="text-2xl">Welcome To,</h2>
+            <p className="text-lg pt-2">Task Management System</p>
+            <div className="mt-10">
+              <Button onClick={() => signIn("google")} className="p-2 bg-blue-500 text-white rounded mt-4 flex items-center">
+                <img className="edit-icon mr-4" src="/icons8-gmail-login-40.png" alt="" />
+                <span>Login with Google</span>
+              </Button>
+            </div>
         </div>
       )}
     </div>
