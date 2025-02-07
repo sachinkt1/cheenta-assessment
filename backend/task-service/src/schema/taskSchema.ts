@@ -16,7 +16,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createTask(title: String!, description: String!, assignedTo: String!): Task
+    createTask(title: String!, description: String!, status: String!, assignedTo: String!): Task
     updateTask(id: ID!, status: String!): Task
     deleteTask(id: ID!): String
   }

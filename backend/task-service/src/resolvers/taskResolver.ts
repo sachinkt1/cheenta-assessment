@@ -10,8 +10,8 @@ const resolvers = {
     getTask: async (_: any, { id }: { id: string }) => await Task.findById(id),
   },
   Mutation: {
-    createTask: async (_: any, { title, description, assignedTo }: any) => {
-      const task = new Task({ title, description, assignedTo });
+    createTask: async (_: any, { title, description, status, assignedTo }: any) => {
+      const task = new Task({ title, description, status, assignedTo });
       await task.save();
       return task;
     },
