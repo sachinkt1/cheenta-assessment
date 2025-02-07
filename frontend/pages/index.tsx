@@ -1,13 +1,58 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
+import Swal from "sweetalert2";
 import { GET_TASKS } from "@/graphql/queries";
+import { UPDATE_TASK_STATUS } from "@/graphql/mutations";
 
 export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { data, loading, error, refetch } = useQuery(GET_TASKS);
+  const [updateTaskStatus] = useMutation(UPDATE_TASK_STATUS);
+  const [socket, setSocket] = useState<any>(null);
 
-  const { data, loading, error } = useQuery(GET_TASKS);
+  useEffect(() => {
+    const newSocket = io("http://localhost:5003");
+    setSocket(newSocket);
+    newSocket.on("taskUpdated", (updatedTask: any) => {
+      Swal.fire({
+        icon: "info",
+        title: "Task Updated",
+        text: `Task "${updatedTask.title}" is now ${updatedTask.status}`,
+      });
+      refetch();
+    });
+    return () => newSocket.disconnect();
+  }, [refetch]);
+
+  const handleUpdateStatus = async (taskId: string, currentStatus: string) => {
+    const { value: newStatus } = await Swal.fire({
+      title: "Update Task Status",
+      input: "select",
+      inputOptions: {
+        pending: "Pending",
+        inProgress: "In Progress",
+        completed: "Completed",
+      },
+      inputValue: currentStatus,
+      showCancelButton: true,
+    });
+
+    if (!newStatus) return;
+
+    try {
+      await updateTaskStatus({
+        variables: { id: taskId, status: newStatus },
+      });
+      socket.emit("taskUpdated", { id: taskId, status: newStatus });
+      Swal.fire("Updated!", "Task status has been updated.", "success");
+    } catch (err: any) {
+      Swal.fire("Error", err.message, "error");
+    }
+  };
 
   if (loading) return <p className="text-center mt-4">Loading tasks...</p>;
   if (error) return <p className="text-red-500 text-center">Error loading tasks</p>;
@@ -35,11 +80,14 @@ export default function Home() {
           <div className="flex justify-center">
             <div className="flex flex-wrap flex-col justify-center items-center gap-6 card">
               {data?.getTasks.map((task: any) => (
-                <div key={task.id} className="p-4 rounded-lg shadow flex flex-wrap flex-col gap-2">
+                <div key={task.id} className="flex flex-col rounded-lg shadow w-full max-w-md gap-2">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{task.title}</h3>
                   <p className="text-gray-600 dark:text-gray-300">{task.description}</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Status: <span className="font-semibold">{task.status}</span>
+                  <p className="text-sm text-gray-500 mt-2 flex items-center justify-between">
+                    Status: <span className="font-semibold text">{task.status === 'inProgress' ? 'In Progress' : task.status}</span>
+                    <button onClick={() => handleUpdateStatus(task.id, task.status)}>
+                      <img className="ml-2 cursor-pointer" src="/icons8-edit-24.png" alt="Edit" />
+                    </button>
                   </p>
                   <p className="text-sm text-gray-500">
                     Assigned to: <span className="font-semibold">{task.assignedTo}</span>

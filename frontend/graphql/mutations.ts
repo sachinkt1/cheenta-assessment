@@ -11,3 +11,13 @@ export const ADD_TASK = gql`
     }
   }
 `;
+
+export const UPDATE_TASK_STATUS = gql`
+  mutation UpdateTaskStatus($id: ID!, $status: String!) {
+    updateTask(id: $id, status: $status) {
+      id
+      title
+      status
+    }
+  }
+`;
