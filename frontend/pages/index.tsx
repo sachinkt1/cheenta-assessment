@@ -13,6 +13,7 @@ export default function Home() {
   const { data, loading, error, refetch } = useQuery(GET_TASKS);
   const [updateTaskStatus] = useMutation(UPDATE_TASK_STATUS);
   const [socket, setSocket] = useState<any>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     const newSocket = io("http://localhost:5003");
@@ -57,6 +58,10 @@ export default function Home() {
   if (loading) return <p className="text-center mt-4">Loading tasks...</p>;
   if (error) return <p className="text-red-500 text-center">Error loading tasks</p>;
 
+  const filteredTasks = data?.getTasks.filter((task: any) =>
+    statusFilter === "all" ? true : task.status === statusFilter
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {session ? (
@@ -66,6 +71,16 @@ export default function Home() {
               Welcome, {session.user?.name}!
             </p>
             <div className="flex gap-4">
+              <select
+                className="p-2 border rounded"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="inProgress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
               <button
                 onClick={() => router.push("/tasks/new")}
                 className="p-2 bg-green-500 rounded"
@@ -78,13 +93,14 @@ export default function Home() {
             </div>
           </div>
           <div className="flex justify-center">
-            <div className="flex flex-wrap flex-col justify-center items-center gap-6 card">
-              {data?.getTasks.map((task: any) => (
-                <div key={task.id} className="flex flex-col rounded-lg shadow w-full max-w-md gap-2">
+            <div className="flex flex-wrap flex-col justify-center items-center gap-6">
+              {
+                filteredTasks.length > 0 ? filteredTasks.map((task: any) => (
+                <div key={task.id} className="flex flex-col rounded-lg shadow w-full max-w-md gap-2 card">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{task.title}</h3>
                   <p className="text-gray-600 dark:text-gray-300">{task.description}</p>
                   <p className="text-sm text-gray-500 mt-2 flex items-center justify-between">
-                    Status: <span className="font-semibold text">{task.status === 'inProgress' ? 'In Progress' : task.status}</span>
+                    Status: <span className="font-semibold">{task.status === 'inProgress' ? 'In Progress' : task.status}</span>
                     <button onClick={() => handleUpdateStatus(task.id, task.status)}>
                       <img className="ml-2 cursor-pointer" src="/icons8-edit-24.png" alt="Edit" />
                     </button>
@@ -93,7 +109,13 @@ export default function Home() {
                     Assigned to: <span className="font-semibold">{task.assignedTo}</span>
                   </p>
                 </div>
-              ))}
+                )) : (
+                  <div className="card">
+                      <img className="edit-icon" src="/icons8-no-data-availible-50.png" alt="" />
+                      <span className="ml-8">No result found :)</span>
+                  </div>
+                )
+              }
             </div>
           </div>
         </div>

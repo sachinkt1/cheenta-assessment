@@ -52,8 +52,8 @@ export default function NewTask() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-        <h2 className="text-4xl font-bold text-center dark:text-white mb-4">
+      <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md card">
+        <h2 className="text-4xl font-bold text-center mb-4">
           Create New Task
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4 flex flex-col mt-4 gap-4">
